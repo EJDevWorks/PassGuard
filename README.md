@@ -46,4 +46,10 @@ Uses local encryption to secure your passwords.
 
 Data never leaves your device.
 
+
+## Demo Picture
+<img width="898" height="355" alt="demo pic" src="https://github.com/user-attachments/assets/0edb470d-ea81-417b-85ff-4ff22d0bb5ce" />
+
+
+
 Keep your master account credentials safe.

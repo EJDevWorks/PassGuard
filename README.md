@@ -20,17 +20,27 @@ Your credentials cannot be recovered if lost.
 
 Keep your device secure to prevent unauthorized access.
 
-## Installation 💻
 
-Download and install the application:
+## Installation & Usage 💻
+
+Download and run the application:
 https://github.com/EJDevWorks/PassGuard/blob/main/dist/app.exe
-Steps
 
-Click on app.exe to install.
+**How to use the .exe:**
+1. Double-click `app.exe` to start PassGuard.
+2. Register a new account with a master username and password.
+3. Log in to start adding and viewing passwords.
 
-Register a new account with a master username and password.
+**Where your data is saved:**
+- All files are stored locally in a folder named `data` next to the `.exe`.
+- The database file is `data/databasepy.db`.
+- The encryption key is `data/filekey.key`.
+- Encrypted user files are saved as `data/<username>.txt.encrypted`.
+- Decrypted files (when you use the decrypt function) are saved as `data/<filename>.decrypted`.
 
-Log in to start adding and viewing passwords.
+**To back up or move your data:**
+- Copy the entire `data` folder to your desired location.
+
 
 ## Usage 🛠️
 
@@ -39,6 +49,10 @@ Login: Enter your registered master username and password.
 Add Passwords: Click Add, then enter your account credentials.
 
 View Passwords: Access your saved passwords anytime from the main window.
+
+Encrypt/Decrypt Files:
+- When you encrypt a file, the encrypted version is saved in the `data` folder.
+- When you decrypt a file, the decrypted version is also saved in the `data` folder.
 
 ## Security 🔐
 

@@ -4,11 +4,15 @@ import os
 from typing import List, Tuple
 from file_crypto import encrypt_file, decrypt_file
 
-conn = sqlite3.connect('passwords.db')
+# Ensure data folder exists
+DATA_DIR = 'data'
+os.makedirs(DATA_DIR, exist_ok=True)
+
+conn = sqlite3.connect(os.path.join(DATA_DIR, 'databasepy.db'))
 cursor = conn.cursor()
 
 # Key management
-KEY_FILE = 'filekey.key'
+KEY_FILE = os.path.join(DATA_DIR, 'filekey.key')
 if not os.path.exists(KEY_FILE):
 	key = Fernet.generate_key()
 	with open(KEY_FILE, 'wb') as f:
@@ -40,10 +44,10 @@ def register_user(username: str, password: str) -> bool:
 		encrypted_pwd = fernet.encrypt(password.encode()).decode()
 		cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, encrypted_pwd))
 		conn.commit()
-		user_file = f'{username}.txt'
+		user_file = os.path.join(DATA_DIR, f'{username}.txt')
 		with open(user_file, 'w') as f:
 			f.write(f'Username: {username}\nPassword: {password}\n')
-		encrypt_file(user_file)
+		encrypt_file(user_file, key_file=KEY_FILE)
 		os.remove(user_file)  
 		return True
 	except sqlite3.IntegrityError:
@@ -66,15 +70,15 @@ def add_password(website: str, username: str, password: str) -> None:
 				   (website, username, encrypted_pwd))
 	conn.commit()
 	# Save password entry to user's encrypted file
-	user_file = f'{username}.txt'
+	user_file = os.path.join(DATA_DIR, f'{username}.txt')
 	entry = f'Website: {website}\nUsername: {username}\nPassword: {password}\n\n'
 	# Decrypt, append, and re-encrypt
 	enc_file = user_file + '.encrypted'
 	if os.path.exists(enc_file):
-		decrypt_file(enc_file, user_file)
+		decrypt_file(enc_file, user_file, key_file=KEY_FILE)
 	with open(user_file, 'a') as f:
 		f.write(entry)
-	encrypt_file(user_file)
+	encrypt_file(user_file, key_file=KEY_FILE)
 	os.remove(user_file)
 
 def get_passwords() -> List[Tuple[str, str, str]]:

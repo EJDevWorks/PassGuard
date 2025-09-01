@@ -1,6 +1,7 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from database import add_password, get_passwords, delete_password, authenticate_user, register_user
+from file_crypto import encrypt_file, decrypt_file
 
 
 root = tk.Tk()
@@ -28,6 +29,17 @@ password_entry.grid(row=2, column=1, sticky="w", padx=(10, 40), pady=8)
 
 
 def open_password_manager():
+    def encrypt_file_gui():
+        file_path = filedialog.askopenfilename(title="Select file to encrypt")
+        if file_path:
+            encrypted_path = encrypt_file(file_path)
+            messagebox.showinfo("Success", f"Encrypted file saved as:\n{encrypted_path}")
+
+    def decrypt_file_gui():
+        file_path = filedialog.askopenfilename(title="Select file to decrypt")
+        if file_path:
+            decrypted_path = decrypt_file(file_path)
+            messagebox.showinfo("Success", f"Decrypted file saved as:\n{decrypted_path}")
     pm_window = tk.Toplevel(root)
     pm_window.title("PassGuard - Password Manager")
     pm_window.geometry("520x460")
@@ -113,11 +125,11 @@ def open_password_manager():
                 tk.Label(row_frame, text=usr, bg="#111", fg="white", width=18, anchor="w").pack(side="left")
                 tk.Label(row_frame, text=pwd, bg="#111", fg="white", width=18, anchor="w").pack(side="left")
 
-                def make_delete(s, u):
+                def make_delete(s: str, u: str, p: str):
                     def _delete():
                         if messagebox.askyesno("Delete", f"Delete entry for {s} / {u}?"):
                             try:
-                                deleted = delete_password(s, u)
+                                deleted = delete_password(s, u, p)
                                 if deleted:
                                     messagebox.showinfo("Deleted", "Entry deleted.")
                                 else:
@@ -127,7 +139,7 @@ def open_password_manager():
                                 messagebox.showerror("Error", f"Error deleting: {e}")
                     return _delete
 
-                del_btn = tk.Button(row_frame, text="Delete", command=make_delete(site, usr),
+                del_btn = tk.Button(row_frame, text="Delete", command=make_delete(site, usr, pwd),
                                     bg="#c40021", fg="white", font=("Segoe UI", 10, "bold"), relief="raised", padx=6)
                 del_btn.pack(side="right", padx=(6,0))
 
@@ -141,6 +153,14 @@ def open_password_manager():
                          bg="#21c400", fg="#222222", font=("Segoe UI", 12, "bold"),
                          relief="raised", padx=10, pady=5, activebackground="#1e9e00", bd=2)
     show_btn.grid(row=6, column=0, columnspan=2, pady=(4, 10), sticky="nsew")
+
+    encrypt_btn = tk.Button(pm_window, text="Encrypt File", command=encrypt_file_gui,
+                            bg="#393e46", fg="#00adb5", font=("Segoe UI", 12, "bold"), relief="flat", padx=20, pady=5)
+    encrypt_btn.grid(row=7, column=0, columnspan=2, pady=(4, 4), sticky="nsew")
+
+    decrypt_btn = tk.Button(pm_window, text="Decrypt File", command=decrypt_file_gui,
+                            bg="#393e46", fg="#00adb5", font=("Segoe UI", 12, "bold"), relief="flat", padx=20, pady=5)
+    decrypt_btn.grid(row=8, column=0, columnspan=2, pady=(0, 10), sticky="nsew")
 
     def on_close():
         root.deiconify()

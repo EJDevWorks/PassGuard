@@ -52,4 +52,3 @@ Data never leaves your device.
 
 
 
-Keep your master account credentials safe.

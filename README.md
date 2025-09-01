@@ -24,10 +24,10 @@ Keep your device secure to prevent unauthorized access.
 ## Installation & Usage 💻
 
 Download and run the application:
-https://github.com/EJDevWorks/PassGuard/blob/main/dist/app.exe
+https://github.com/EJDevWorks/PassManage/blob/main/PassManage.exe
 
 **How to use the .exe:**
-1. Double-click `app.exe` to start PassGuard.
+1. Double-click `PassManage.exe` to start PassManage.
 2. Register a new account with a master username and password.
 3. Log in to start adding and viewing passwords.
 

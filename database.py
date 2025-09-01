@@ -4,15 +4,26 @@ import os
 from typing import List, Tuple
 from file_crypto import encrypt_file, decrypt_file
 
+
 # Ensure data folder exists
 DATA_DIR = 'data'
 os.makedirs(DATA_DIR, exist_ok=True)
 
-conn = sqlite3.connect(os.path.join(DATA_DIR, 'databasepy.db'))
+# Database encryption/decryption
+DB_PATH = os.path.join(DATA_DIR, 'databasepy.db')
+DB_ENC_PATH = DB_PATH + '.encrypted'
+KEY_FILE = os.path.join(DATA_DIR, 'filekey.key')
+
+from file_crypto import encrypt_file, decrypt_file
+
+# Decrypt database if encrypted version exists
+if os.path.exists(DB_ENC_PATH):
+	decrypt_file(DB_ENC_PATH, DB_PATH, key_file=KEY_FILE)
+
+conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
 # Key management
-KEY_FILE = os.path.join(DATA_DIR, 'filekey.key')
 if not os.path.exists(KEY_FILE):
 	key = Fernet.generate_key()
 	with open(KEY_FILE, 'wb') as f:
@@ -39,6 +50,17 @@ CREATE TABLE IF NOT EXISTS users (
 )
 ''')
 conn.commit()
+
+# Encrypt database on exit
+import atexit
+def encrypt_db_on_exit():
+	if os.path.exists(DB_PATH):
+		encrypt_file(DB_PATH, DB_ENC_PATH, key_file=KEY_FILE)
+		try:
+			os.remove(DB_PATH)
+		except Exception:
+			pass
+atexit.register(encrypt_db_on_exit)
 def register_user(username: str, password: str) -> bool:
 	try:
 		encrypted_pwd = fernet.encrypt(password.encode()).decode()
